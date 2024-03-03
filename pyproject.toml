@@ -1,0 +1,17 @@
+[project]
+name = "neat-driver"
+version = "0.0.1"
+description = "Self-driving AI using the NEAT algorithm"
+maintainers = [
+    {name = "Will Skaggs", email = "skaggswi@msu.edu"},
+]
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["tests"]
