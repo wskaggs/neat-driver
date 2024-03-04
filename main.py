@@ -1,6 +1,6 @@
 import pygame
-from src import Simulation
 import math
+from src import Simulation, Obstacle
 
 
 def main() -> None:
@@ -16,6 +16,7 @@ def main() -> None:
 
     # Run the game loop
     simulation = Simulation()
+    obstacle = Obstacle()
     window_should_close = False
     delta_time = 0
 
@@ -43,6 +44,7 @@ def main() -> None:
         # Create the virtual surface and draw the simulation on this surface
         surface = pygame.Surface(simulation.get_virtual_size())
         simulation.draw(surface)
+        obstacle.draw(surface, 10, 10)
 
         # Draw the virtual surface onto the main surface (centered, scaled using aspect-fit)
         scale = min(window.get_width() / surface.get_width(), window.get_height() / surface.get_height())
