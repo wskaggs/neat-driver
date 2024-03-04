@@ -1,11 +1,13 @@
 import pygame
 from src import Simulation
+import math
 
 
 def main() -> None:
     """
     Entry point into running the simulation visualization
     """
+
     # Initialize pygame and the window
     pygame.init()
     pygame.display.set_caption("NEAT Driver")
@@ -16,6 +18,18 @@ def main() -> None:
     simulation = Simulation()
     window_should_close = False
     delta_time = 0
+
+    #colors
+    white = (255, 255, 255)
+    black = (0, 0, 0)
+
+    track = [
+        (150, 100),
+        (650, 100),
+        (650, 500),
+        (150, 500),
+        (150, 100)
+    ]
 
     while not window_should_close:
         # Handle events
@@ -36,9 +50,14 @@ def main() -> None:
         dest_height = scale * surface.get_height()
         offset_x = (window.get_width() - dest_width) / 2
         offset_y = (window.get_height() - dest_height) / 2
-
         window.fill((0, 0, 0))
         window.blit(pygame.transform.scale(surface, (dest_width, dest_height)), (offset_x, offset_y))
+
+        #draw track
+        pygame.draw.rect(window, black, pygame.Rect(120, 50, 560, 60))
+        pygame.draw.rect(window, black, pygame.Rect(120, 50, 60, 500))
+        pygame.draw.rect(window, black, pygame.Rect(120, 500, 560, 60))
+        pygame.draw.rect(window, black, pygame.Rect(620, 50, 60, 500))
 
         # Update the screen buffer and limit the framerate
         pygame.display.flip()
