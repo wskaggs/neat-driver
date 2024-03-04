@@ -44,7 +44,7 @@ def main() -> None:
         # Create the virtual surface and draw the simulation on this surface
         surface = pygame.Surface(simulation.get_virtual_size())
         simulation.draw(surface)
-        obstacle.draw(surface, 10, 10)
+        obstacle.draw(surface, 50, 50)
 
         # Draw the virtual surface onto the main surface (centered, scaled using aspect-fit)
         scale = min(window.get_width() / surface.get_width(), window.get_height() / surface.get_height())
