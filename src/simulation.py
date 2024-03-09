@@ -1,32 +1,63 @@
-import pygame
+import pyray as pr
+from .track import Track
+from .human_driver import HumanDriver
+from .sim_object import SimObject
 
 
 class Simulation:
     """
     The top-level class representing the AI driver simulation
     """
-    def get_virtual_size(self) -> tuple[int, int]:
+    def __init__(self):
         """
-        Get the virtual size of the current scene.
+        Constructor
+        """
+        self._track = Track()
+        self._update_scene_fitment()
 
-        :return: the virtual (width, height) of the scene
-        """
-        # Just a square for now to test scaling of the virtual surface
-        return 100, 100
+        # TODO: figure out a better way to create drivers and obstacles. Xml file?
+        self.driver = HumanDriver()
+        self.obstacle = SimObject(pr.Vector2(5, 5), "box.png")
+        self.obstacle.set_position(pr.Vector2(100, 75))
 
     def update(self, delta_time: float) -> None:
         """
         Update this simulation
 
-        :param delta_time: elapsed time since the last update in milliseconds
+        :param delta_time: elapsed time since the last update in seconds
         """
-        ...
+        self.driver.update(delta_time)
 
-    def draw(self, surface: pygame.Surface) -> None:
+    def _update_scene_fitment(self) -> None:
         """
-        Draw the simulation onto a surface
+        Convenience function to update the fitment of the virtual scene
+        """
+        screen_size = pr.Vector2(pr.get_screen_width(), pr.get_screen_height())
+        scene_size = self._track.get_size()
 
-        :param surface: the surface to draw on
+        self._scale = min(screen_size.x / scene_size.x, screen_size.y / scene_size.y)
+        dest_size = pr.vector2_scale(scene_size, self._scale)
+        self._offset = pr.vector2_scale(pr.vector2_subtract(screen_size, dest_size), 0.5)
+
+    def draw(self) -> None:
         """
-        # This just draws a red rectangle on the entire surface
-        pygame.draw.rect(surface, (255, 0, 0), (0, 0, *self.get_virtual_size()))
+        Draw the simulation
+        """
+        # Update the fitment of the scene if needed
+        if pr.is_window_resized():
+            self._update_scene_fitment()
+
+        # Save the current view matrix
+        pr.rl_push_matrix()
+
+        # Translate and scale for the virtual coordinate system
+        pr.rl_translatef(self._offset.x, self._offset.y, 0)
+        pr.rl_scalef(self._scale, self._scale, 1)
+
+        # Draw simulation objects
+        self._track.draw()
+        self.driver.draw()
+        self.obstacle.draw()
+
+        # Restore the view matrix
+        pr.rl_pop_matrix()

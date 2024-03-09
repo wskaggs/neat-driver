@@ -1,2 +1,2 @@
 from .simulation import Simulation
-from .obstacle import Obstacle
+from .texture_pack import TexturePack

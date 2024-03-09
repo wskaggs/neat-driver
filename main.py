@@ -1,72 +1,41 @@
-import pygame
-import math
-from src import Simulation, Obstacle
+from pyray import *
+from src import Simulation, TexturePack
 
 
 def main() -> None:
     """
     Entry point into running the simulation visualization
     """
+    # Initialize raylib and the opengl context
+    init_window(800, 600, "NEAT Driver")
 
-    # Initialize pygame and the window
-    pygame.init()
-    pygame.display.set_caption("NEAT Driver")
-    window = pygame.display.set_mode((800, 600), flags=pygame.RESIZABLE)
-    clock = pygame.time.Clock()
+    # Ensure initialization was successful
+    if not is_window_ready():
+        raise RuntimeError("[ERROR]: Failed to initialize the window")
+
+    # Configure the window
+    set_window_state(ConfigFlags.FLAG_WINDOW_RESIZABLE)
+    set_target_fps(60)
+
+    # Load all image assets
+    TexturePack.load_all("assets/images/")
 
     # Run the game loop
     simulation = Simulation()
-    obstacle = Obstacle()
-    window_should_close = False
-    delta_time = 0
 
-    #colors
-    white = (255, 255, 255)
-    black = (0, 0, 0)
-
-    track = [
-        (150, 100),
-        (650, 100),
-        (650, 500),
-        (150, 500),
-        (150, 100)
-    ]
-
-    while not window_should_close:
-        # Handle events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                window_should_close = True
-
+    while not window_should_close():
         # Update the simulation
-        simulation.update(delta_time)
+        simulation.update(get_frame_time())
 
-        # Create the virtual surface and draw the simulation on this surface
-        surface = pygame.Surface(simulation.get_virtual_size())
-        simulation.draw(surface)
-        obstacle.draw(surface, 50, 50)
-
-        # Draw the virtual surface onto the main surface (centered, scaled using aspect-fit)
-        scale = min(window.get_width() / surface.get_width(), window.get_height() / surface.get_height())
-        dest_width = scale * surface.get_width()
-        dest_height = scale * surface.get_height()
-        offset_x = (window.get_width() - dest_width) / 2
-        offset_y = (window.get_height() - dest_height) / 2
-        window.fill((0, 0, 0))
-        window.blit(pygame.transform.scale(surface, (dest_width, dest_height)), (offset_x, offset_y))
-
-        #draw track
-        pygame.draw.rect(window, black, pygame.Rect(120, 50, 560, 60))
-        pygame.draw.rect(window, black, pygame.Rect(120, 50, 60, 500))
-        pygame.draw.rect(window, black, pygame.Rect(120, 500, 560, 60))
-        pygame.draw.rect(window, black, pygame.Rect(620, 50, 60, 500))
-
-        # Update the screen buffer and limit the framerate
-        pygame.display.flip()
-        delta_time = clock.tick(60)
+        # Draw the simulation to the screen
+        begin_drawing()
+        clear_background(BLACK)
+        simulation.draw()
+        end_drawing()
 
     # De-initialize and close the window
-    pygame.quit()
+    TexturePack.unload_all()
+    close_window()
 
 
 if __name__ == "__main__":
