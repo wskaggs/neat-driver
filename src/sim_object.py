@@ -1,6 +1,6 @@
 from pyray import *
 from .texture_pack import TexturePack
-from . import consts
+import math
 
 
 class SimObject:
@@ -148,7 +148,7 @@ class SimObject:
 
         # Move to the center of this object and rotate for its orientation
         rl_translatef(self._pos.x, self._pos.y, 0)
-        rl_rotatef(consts.RAD_TO_DEG * self._angle, 0, 0, 1)
+        rl_rotatef(math.degrees(self._angle), 0, 0, 1)
 
         # Draw the texture to the screen
         source_rect = Rectangle(0, 0, self._texture.width, self._texture.height)

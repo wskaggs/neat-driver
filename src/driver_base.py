@@ -1,5 +1,6 @@
 from pyray import *
 from .sim_object import SimObject
+from .track import Track
 import math
 
 
@@ -14,11 +15,12 @@ class DriverBase(SimObject):
 	HORSEPOWER = 60
 	BRAKE_POWER = 30
 
-	def __init__(self) -> None:
+	def __init__(self, track: Track) -> None:
 		"""
 		Constructor
 		"""
 		super().__init__(Vector2(5.5, 2), "car.png")
+		self._track = track
 		self._speed = 0
 		self._steering_angle = 0
 
@@ -129,3 +131,21 @@ class DriverBase(SimObject):
 		"""
 		self._apply_friction(delta_time)
 		self._apply_steering(delta_time)
+
+	def draw(self) -> None:
+		"""
+		Draw this driver
+		"""
+		super().draw()
+
+		# TODO: remove drawing ray casts?
+		pos = self.get_position()
+		angle = self.get_angle()
+		num_casts = 10
+		angle_delta = 2 * math.pi / num_casts
+
+		for i in range(num_casts):
+			ray_end = self._track.ray_collision(pos, angle + i * angle_delta)
+
+			if ray_end is not None:
+				draw_line_v(pos, ray_end, BLUE)

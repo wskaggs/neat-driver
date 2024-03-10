@@ -27,7 +27,6 @@ class HumanDriver(DriverBase):
             self.press_gas(delta_time)
             self.set_steering_angle(0)
 
-
         if is_key_down(KeyboardKey.KEY_DOWN):
             self.press_brake(delta_time)
 

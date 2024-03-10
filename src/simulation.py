@@ -1,7 +1,6 @@
 from pyray import *
 from .track import Track
 from .human_driver import HumanDriver
-from .sim_object import SimObject
 
 
 class Simulation:
@@ -14,11 +13,11 @@ class Simulation:
         """
         self._track = Track()
         self._update_scene_fitment()
+        self._drivers = []
 
-        # TODO: figure out a better way to create drivers and obstacles. Xml file?
-        self.driver = HumanDriver()
-        self.obstacle = SimObject(Vector2(5, 5), "box.png")
-        self.obstacle.set_position(Vector2(100, 75))
+        # TODO: figure out a better way to create drivers
+        driver = HumanDriver(self._track)
+        self._drivers.append(driver)
 
     def update(self, delta_time: float) -> None:
         """
@@ -26,7 +25,8 @@ class Simulation:
 
         :param delta_time: elapsed time since the last update in seconds
         """
-        self.driver.update(delta_time)
+        for driver in self._drivers:
+            driver.update(delta_time)
 
     def _update_scene_fitment(self) -> None:
         """
@@ -56,8 +56,9 @@ class Simulation:
 
         # Draw simulation objects
         self._track.draw()
-        self.driver.draw()
-        self.obstacle.draw()
+
+        for driver in self._drivers:
+            driver.draw()
 
         # Restore the view matrix
         rl_pop_matrix()
