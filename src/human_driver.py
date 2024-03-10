@@ -16,8 +16,18 @@ class HumanDriver(DriverBase):
             self.turn_left()
         if is_key_down(KeyboardKey.KEY_RIGHT):
             self.turn_right()
-        if is_key_down(KeyboardKey.KEY_UP):
+
+        if is_key_down(KeyboardKey.KEY_UP) and is_key_down(KeyboardKey.KEY_LEFT):
             self.press_gas(delta_time)
+            self.turn_left()
+        elif is_key_down(KeyboardKey.KEY_UP) and is_key_down(KeyboardKey.KEY_RIGHT):
+            self.press_gas(delta_time)
+            self.turn_right()
+        elif is_key_down(KeyboardKey.KEY_UP):
+            self.press_gas(delta_time)
+            self.set_steering_angle(0)
+
+
         if is_key_down(KeyboardKey.KEY_DOWN):
             self.press_brake(delta_time)
 
