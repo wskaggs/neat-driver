@@ -1,4 +1,4 @@
-import pyray as pr
+from pyray import *
 from .texture_pack import TexturePack
 
 
@@ -12,9 +12,9 @@ class Track:
         """
         self._design = TexturePack.get_texture("oval_track.png")
         self._play_area = TexturePack.get_texture("oval_track_valid.png")
-        self._size = pr.Vector2(200, 100)
+        self._size = Vector2(200, 100)
 
-    def get_size(self) -> pr.Vector2:
+    def get_size(self) -> Vector2:
         """
         Get the virtual size of this track
 
@@ -26,6 +26,6 @@ class Track:
         """
         Draw this track to the screen
         """
-        source_rect = pr.Rectangle(0, 0, self._design.width, self._design.height)
-        dest_rect = pr.Rectangle(0, 0, self._size.x, self._size.y)
-        pr.draw_texture_pro(self._design, source_rect, dest_rect, pr.Vector2(0, 0), 0, pr.WHITE)
+        source_rect = Rectangle(0, 0, self._design.width, self._design.height)
+        dest_rect = Rectangle(0, 0, self._size.x, self._size.y)
+        draw_texture_pro(self._design, source_rect, dest_rect, Vector2(0, 0), 0, WHITE)
