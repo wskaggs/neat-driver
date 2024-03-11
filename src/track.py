@@ -63,8 +63,8 @@ class Track(SimObject):
         DDA algorithm: https://lodev.org/cgtutor/raycasting.html
 
         :param world_pos: the position to start the ray
-        :param angle: the angle to
-        :return: the distance until
+        :param angle: the angle/heading of the ray
+        :return: the distance until a collision with a track edge/obstacle
         """
         # Based on the heading, calculate the distance to travel between x and y pixel sides in map space
         heading = Vector2(math.cos(angle), math.sin(angle))

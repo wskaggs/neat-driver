@@ -17,6 +17,8 @@ class Simulation:
 
         # TODO: figure out a better way to create drivers
         driver = HumanDriver(self._track)
+        driver.set_position(Vector2(102.5, 25))
+        driver.set_angle(3.14)
         self._drivers.append(driver)
 
     def update(self, delta_time: float) -> None:
@@ -56,10 +58,6 @@ class Simulation:
 
         # Draw simulation objects
         self._track.draw()
-
-        screen_size = Vector2(self._track.get_size().x, self._track.get_size().y)
-
-        rl_translatef(self._offset.x + screen_size.x / 2 - 1, screen_size.y / 4.7, 0)
 
         for driver in self._drivers:
             driver.draw()
