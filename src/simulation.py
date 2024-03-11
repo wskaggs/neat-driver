@@ -57,6 +57,10 @@ class Simulation:
         # Draw simulation objects
         self._track.draw()
 
+        screen_size = Vector2(self._track.get_size().x, self._track.get_size().y)
+
+        rl_translatef(self._offset.x + screen_size.x / 2 - 1, screen_size.y / 4.7, 0)
+
         for driver in self._drivers:
             driver.draw()
 
