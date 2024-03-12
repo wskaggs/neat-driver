@@ -16,6 +16,9 @@ class Track(SimObject):
         super().__init__(Vector2(200, 100), "oval_track.png")
         self._map = TexturePack.get_image("oval_track_valid.png")
         self._obstacles = []
+        self._checkpoints = [(Vector2(50, 75), Vector2(150, 75))]
+        self._car_last_checkpoint = None
+        self._total_distance_traveled = 0
 
         # TODO: remove this hard-coded obstacle
         obstacle = ObstacleBase(Vector2(5, 5), "box.png")
@@ -38,6 +41,11 @@ class Track(SimObject):
         for obstacle in self._obstacles:
             obstacle.draw()
 
+        #Draw checkpoints
+        # for checkpoint in self._checkpoints:
+        #     start, end = checkpoint
+        #     (start, end, 2, Color(255, 0, 0, 255))
+            
     def _world_to_map(self, pos: Vector2) -> Vector2:
         """
         Convenience function to convert a world-space position into the corresponding map coordinate
@@ -117,3 +125,47 @@ class Track(SimObject):
                     break
 
         return None if not found_end else self._map_to_world(vector2_add(map_pos, vector2_scale(heading, distance)))
+    
+    def checkpoint_check(self, car_pos: Vector2, new_pos: Vector2) -> bool:
+        """
+        Check if car passed checkpoint
+
+        :param car_pos: position of the car
+        :param new_pos: new poisition of car
+        :return: True if a checkpoint is crossed
+        """
+        for checkpoint in self._checkpoints:
+            start, end = checkpoint
+            if self._line_intersects(car_pos, new_pos, start, end):
+                if self._car_last_checkpoint != checkpoint:
+                    self._car_last_checkpoint = checkpoint
+                    return True       
+        return False
+    
+    def _line_intersects(self, car_pos: Vector2, new_pos: Vector2, start: Vector2, end: Vector2) -> bool:
+        """
+        Check if a line segment defined by car_pos and new_pos intersects with a line segment defined by start and end.
+
+        :param car_pos: The starting point of the first line segment.
+        :param new_pos: The end point of the first line segment.
+        :param start: The starting point of the second line segment.
+        :param end: The end point of the second line segment.
+        :return: True if the two line segments intersect, False otherwise.
+        """
+        # Calculate the direction vectors of the two line segments
+        dir1 = vector2_subtract(new_pos, car_pos)
+        dir2 = vector2_subtract(end, start)
+
+        # Calculate determinant
+        determinant = dir1.x * dir2.y - dir1.y * dir2.x
+
+        # If the determinant is close to zero, the lines are parallel or collinear
+        if math.isclose(determinant, 0):
+            return False
+
+        # Calculate the intersection point parameter for both line segments
+        t1 = ((start.x - car_pos.x) * dir2.y - (start.y - car_pos.y) * dir2.x) / determinant
+        t2 = ((car_pos.x - start.x) * dir1.y - (car_pos.y - start.y) * dir1.x) / -determinant
+
+        # If both parameters are between 0 and 1, the line segments intersect
+        return 0 <= t1 <= 1 and 0 <= t2 <= 1

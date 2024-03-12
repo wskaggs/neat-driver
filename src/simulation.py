@@ -28,7 +28,11 @@ class Simulation:
         :param delta_time: elapsed time since the last update in seconds
         """
         for driver in self._drivers:
+            initial_position = driver.get_position()
             driver.update(delta_time)
+            new_position = driver.get_position()
+            if self._track.checkpoint_check(initial_position, new_position):
+                print('checkpoint passed')
 
     def _update_scene_fitment(self) -> None:
         """
