@@ -1,2 +1,3 @@
 raylib
+neat-python
 pytest

@@ -12,7 +12,7 @@ class DriverBase(SimObject):
 	STEERING_STEPS = 30
 	FRICTION = 0.9
 	DRAG = 0.001
-	HORSEPOWER = 60
+	HORSEPOWER = 40
 	BRAKE_POWER = 30
 
 	def __init__(self, track: Track) -> None:
@@ -23,6 +23,7 @@ class DriverBase(SimObject):
 		self._track = track
 		self._speed = 0
 		self._steering_angle = 0
+		self._off_tack = False
 
 	def get_speed(self) -> float:
 		"""
@@ -47,6 +48,32 @@ class DriverBase(SimObject):
 		:return: the steering angle in radians
 		"""
 		return self._steering_angle
+
+	def set_steering_angle(self, steering_angle: float) -> None:
+		"""
+		Set the steering angle of this driver
+
+		The steering angle is bounded between [-MAX_STEERING_ANGLE, MAX_STEERING_ANGLE]
+
+		:param steering_angle: the new steering angle in radians
+		"""
+		self._steering_angle = max(-self.MAX_STEERING_ANGLE, min(steering_angle, self.MAX_STEERING_ANGLE))
+
+	def is_off_track(self) -> bool:
+		"""
+		Check if this driver is currently off the track
+
+		:return: `True` if the driver is off the track, `False` otherwise
+		"""
+		return self._off_tack
+
+	def set_off_track(self, off_track: bool) -> None:
+		"""
+		Set the flag indicating if this driver is off track
+
+		:param off_track: the new off track flag
+		"""
+		self._off_tack = off_track
 
 	def turn_left(self) -> None:
 		"""
@@ -75,16 +102,6 @@ class DriverBase(SimObject):
 		:param delta_time: the elapsed time since the last update in seconds
 		"""
 		self._speed = max(0.0, self._speed - self.BRAKE_POWER * delta_time)
-
-	def set_steering_angle(self, steering_angle: float) -> None:
-		"""
-		Set the steering angle of this driver
-
-		The steering angle is bounded between [-MAX_STEERING_ANGLE, MAX_STEERING_ANGLE]
-
-		:param steering_angle: the new steering angle in radians
-		"""
-		self._steering_angle = max(-self.MAX_STEERING_ANGLE, min(steering_angle, self.MAX_STEERING_ANGLE))
 
 	def _apply_steering(self, delta_time: float) -> None:
 		"""
@@ -131,21 +148,3 @@ class DriverBase(SimObject):
 		"""
 		self._apply_friction(delta_time)
 		self._apply_steering(delta_time)
-
-	def draw(self) -> None:
-		"""
-		Draw this driver
-		"""
-		super().draw()
-
-		# TODO: remove drawing ray casts?
-		pos = self.get_position()
-		angle = self.get_angle()
-		num_casts = 10
-		angle_delta = 2 * math.pi / num_casts
-
-		for i in range(num_casts):
-			ray_end = self._track.ray_collision(pos, angle + i * angle_delta)
-
-			if ray_end is not None:
-				draw_line_v(pos, ray_end, BLUE)

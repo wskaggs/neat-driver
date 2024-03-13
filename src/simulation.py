@@ -1,13 +1,13 @@
 from pyray import *
 from .track import Track
-from .human_driver import HumanDriver
+from .driver_base import DriverBase
 
 
 class Simulation:
     """
     The top-level class representing the AI driver simulation
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Constructor
         """
@@ -15,11 +15,41 @@ class Simulation:
         self._update_scene_fitment()
         self._drivers = []
 
-        # TODO: figure out a better way to create drivers
-        driver = HumanDriver(self._track)
+    def get_track(self) -> Track:
+        """
+        Get the currently loaded track
+
+        :return: the current track
+        """
+        return self._track
+
+    def add_driver(self, driver: DriverBase) -> None:
+        """
+        Add a driver to the simulation and place it at the track start
+
+        :param driver: the driver to add
+        """
         driver.set_position(Vector2(102.5, 25))
         driver.set_angle(3.14)
         self._drivers.append(driver)
+
+    def purge_drivers(self) -> None:
+        """
+        Clear all drivers currently on the track
+        """
+        self._drivers.clear()
+
+    def all_drivers_off_track(self) -> bool:
+        """
+        Check if all drivers are currently off the track
+
+        :return: `True` if all drivers are off the track, `False` otherwise
+        """
+        for driver in self._drivers:
+            if not driver.is_off_track():
+                return False
+
+        return True
 
     def update(self, delta_time: float) -> None:
         """
@@ -31,6 +61,7 @@ class Simulation:
             initial_position = driver.get_position()
             driver.update(delta_time)
             new_position = driver.get_position()
+
             if self._track.checkpoint_check(initial_position, new_position):
                 print('checkpoint passed')
 

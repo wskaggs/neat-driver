@@ -1,9 +1,10 @@
 from src.driver_base import DriverBase
-from pyray import *
+from src.track import Track
 
 
 def test_get_and_set_speed() -> None:
-    driver = DriverBase()
+    track = Track()
+    driver = DriverBase(track)
 
     assert driver.get_speed() == 0
 
@@ -14,7 +15,8 @@ def test_get_and_set_speed() -> None:
 
 
 def test_get_and_set_steering_angle() -> None:
-    driver = DriverBase()
+    track = Track()
+    driver = DriverBase(track)
 
     assert driver.get_steering_angle() == 0
 
