@@ -22,7 +22,7 @@ class Track(SimObject):
 
         # TODO: remove this hard-coded obstacle
         obstacle = ObstacleBase(Vector2(5, 5), "box.png")
-        obstacle.set_position(Vector2(100, 75))
+        obstacle.set_position(Vector2(100, 72))
         self._obstacles.append(obstacle)
 
     def draw(self) -> None:

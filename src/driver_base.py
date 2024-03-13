@@ -9,7 +9,7 @@ class DriverBase(SimObject):
 	The base class for a driver
 	"""
 	MAX_STEERING_ANGLE = math.pi / 6
-	STEERING_STEPS = 30
+	STEERING_RATE = MAX_STEERING_ANGLE / 0.25
 	FRICTION = 0.9
 	DRAG = 0.001
 	HORSEPOWER = 40
@@ -75,17 +75,21 @@ class DriverBase(SimObject):
 		"""
 		self._off_tack = off_track
 
-	def turn_left(self) -> None:
+	def turn_left(self, delta_time: float) -> None:
 		"""
 		Turn to the left by one tick
-		"""
-		self.set_steering_angle(self.get_steering_angle() - 2 * self.MAX_STEERING_ANGLE / self.STEERING_STEPS)
 
-	def turn_right(self) -> None:
+		:param delta_time: the elapsed time since the last update in seconds
+		"""
+		self.set_steering_angle(self.get_steering_angle() - self.STEERING_RATE * delta_time)
+
+	def turn_right(self, delta_time: float) -> None:
 		"""
 		Turn to the left by one tick
+
+		:param delta_time: the elapsed time since the last update in seconds
 		"""
-		self.set_steering_angle(self.get_steering_angle() + 2 * self.MAX_STEERING_ANGLE / self.STEERING_STEPS)
+		self.set_steering_angle(self.get_steering_angle() + self.STEERING_RATE * delta_time)
 
 	def press_gas(self, delta_time: float) -> None:
 		"""
@@ -122,9 +126,13 @@ class DriverBase(SimObject):
 		front_wheel = vector2_add(front_wheel, vector2_scale(steering_heading, self._speed * delta_time))
 		rear_wheel = vector2_add(rear_wheel, vector2_scale(heading, self._speed * delta_time))
 
+		# Adjust the steering angle based on the change of the car's heading
+		new_angle = math.atan2(front_wheel.y - rear_wheel.y, front_wheel.x - rear_wheel.x)
+		self.set_steering_angle(self.get_steering_angle() - (new_angle - self.get_angle()))
+
 		# Update the position and angle
 		self.set_position(vector2_scale(vector2_add(front_wheel, rear_wheel), 0.5))
-		self.set_angle(math.atan2(front_wheel.y - rear_wheel.y, front_wheel.x - rear_wheel.x))
+		self.set_angle(new_angle)
 
 	def _apply_friction(self, delta_time: float) -> None:
 		"""

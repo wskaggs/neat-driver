@@ -49,7 +49,7 @@ class AiDriver(DriverBase):
         pos = self.get_position()
         angle = self.get_angle()
         num_casts = 10
-        fov = math.radians(135)
+        fov = math.pi
         angle_delta = fov / num_casts
 
         for i in range(num_casts):
@@ -64,9 +64,9 @@ class AiDriver(DriverBase):
         if outputs[1] > 0.5:
             self.press_gas(delta_time)
         if outputs[2] > 0.5:
-            self.turn_left()
+            self.turn_left(delta_time)
         if outputs[3] > 0.5:
-            self.turn_right()
+            self.turn_right(delta_time)
 
     def draw(self) -> None:
         """
