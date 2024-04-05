@@ -48,7 +48,7 @@ class AiDriver(DriverBase):
 
         pos = self.get_position()
         angle = self.get_angle()
-        num_casts = 10
+        num_casts = 12
         fov = math.pi
         angle_delta = fov / num_casts
 

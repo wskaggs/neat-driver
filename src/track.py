@@ -13,8 +13,8 @@ class Track(SimObject):
         """
         Constructor
         """
-        super().__init__(Vector2(200, 100), "oval_track.png")
-        self._map = TexturePack.get_image("oval_track_valid.png")
+        super().__init__(Vector2(300, 300), "complex_track.png")
+        self._map = TexturePack.get_image("complex_track_valid.png")
         self._obstacles = []
         self._checkpoints = [(Vector2(50, 75), Vector2(150, 75))]
         self._car_last_checkpoint = None

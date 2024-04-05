@@ -49,9 +49,12 @@ def load_population_from_config_file(path: str) -> neat.Population:
     return population
 
 
-def run_simulation(population: neat.Population) -> None:
+def run_simulation(population: neat.Population, tick_time: float = 1 / 20) -> None:
     """
     Run the driving simulation and train the population of drivers
+
+    :param population: the population to train
+    :param tick_time: the time between updates in seconds
     """
     simulation = Simulation()
 
@@ -70,14 +73,20 @@ def run_simulation(population: neat.Population) -> None:
             simulation.add_driver(driver)
 
         # Run the simulation until all drivers are off-track
+        time_since_last_update = 0
+
         while not simulation.all_drivers_off_track():
             # Close the window gracefully if requested by the user
             if window_should_close():
                 terminate_window()
                 sys.exit()
 
-            # Update the drivers
-            simulation.update(get_frame_time())
+            # Update the drivers (we may need to do this multiple times depending on the frame rate)
+            time_since_last_update += get_frame_time()
+
+            while time_since_last_update >= tick_time:
+                simulation.update(tick_time)
+                time_since_last_update -= tick_time
 
             # Update the visualization
             begin_drawing()

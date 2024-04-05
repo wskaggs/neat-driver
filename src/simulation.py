@@ -1,6 +1,7 @@
 from pyray import *
 from .track import Track
 from .driver_base import DriverBase
+import math
 
 
 class Simulation:
@@ -29,8 +30,8 @@ class Simulation:
 
         :param driver: the driver to add
         """
-        driver.set_position(Vector2(102.5, 25))
-        driver.set_angle(3.14)
+        driver.set_position(Vector2(214, 94))
+        driver.set_angle(math.pi * 3 / 4)
         self._drivers.append(driver)
 
     def purge_drivers(self) -> None:
