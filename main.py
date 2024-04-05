@@ -49,14 +49,16 @@ def load_population_from_config_file(path: str) -> neat.Population:
     return population
 
 
-def run_simulation(population: neat.Population, tick_time: float = 1 / 20) -> None:
+def run_simulation(population: neat.Population, track_filepath: str, tick_time: float = 1 / 20) -> None:
     """
     Run the driving simulation and train the population of drivers
 
     :param population: the population to train
+    :param track_filepath: path to the xml file describing the track to use
     :param tick_time: the time between updates in seconds
     """
     simulation = Simulation()
+    simulation.xml_load(track_filepath)
 
     def evaluate_genomes(genomes: list[tuple[int, neat.DefaultGenome]], config: neat.Config) -> None:
         """
@@ -104,7 +106,7 @@ def main() -> None:
     """
     initialize_window()
     population = load_population_from_config_file("assets/configs/config-feedforward.txt")
-    run_simulation(population)
+    run_simulation(population, "assets/tracks/windy.xml")
     terminate_window()
 
 

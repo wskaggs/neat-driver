@@ -1,7 +1,7 @@
 from pyray import *
 from .track import Track
 from .driver_base import DriverBase
-import math
+from xml.etree import ElementTree
 
 
 class Simulation:
@@ -13,8 +13,8 @@ class Simulation:
         Constructor
         """
         self._track = Track()
-        self._update_scene_fitment()
         self._drivers = []
+        self._is_first_draw = True
 
     def get_track(self) -> Track:
         """
@@ -30,8 +30,8 @@ class Simulation:
 
         :param driver: the driver to add
         """
-        driver.set_position(Vector2(214, 94))
-        driver.set_angle(math.pi * 3 / 4)
+        driver.set_position(self._track.get_driver_start_pos())
+        driver.set_angle(self._track.get_driver_start_angle())
         self._drivers.append(driver)
 
     def purge_drivers(self) -> None:
@@ -51,6 +51,19 @@ class Simulation:
                 return False
 
         return True
+
+    def xml_load(self, filepath: str) -> None:
+        """
+        Load this track from a xml file
+
+        :param filepath: the path to the xml file to load
+        """
+        # Load the track from the xml file
+        tree = ElementTree.parse(filepath)
+        root = tree.getroot()
+
+        # Load the track from the xml file
+        self._track.xml_load(root)
 
     def update(self, delta_time: float) -> None:
         """
@@ -82,7 +95,8 @@ class Simulation:
         Draw the simulation
         """
         # Update the fitment of the scene if needed
-        if is_window_resized():
+        if self._is_first_draw or is_window_resized():
+            self._is_first_draw = False
             self._update_scene_fitment()
 
         # Save the current view matrix

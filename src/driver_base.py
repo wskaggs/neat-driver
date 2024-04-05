@@ -9,7 +9,7 @@ class DriverBase(SimObject):
 	The base class for a driver
 	"""
 	MAX_STEERING_ANGLE = math.pi / 3
-	STEERING_RATE = MAX_STEERING_ANGLE / 0.25
+	STEERING_RATE = math.radians(135)
 	FRICTION = 0.9
 	DRAG = 0.001
 	HORSEPOWER = 40

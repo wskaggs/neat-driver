@@ -1,23 +1,25 @@
 from pyray import *
+from xml.etree.ElementTree import Element
 from .texture_pack import TexturePack
-import math
+from math import degrees, radians
+from typing import Optional
 
 
 class SimObject:
     """
     The base class for all simulation objects
     """
-    def __init__(self, size: Vector2, texture_filename: str) -> None:
+    def __init__(self, size: Optional[Vector2] = None, texture_filename: str | None = None) -> None:
         """
         Constructor
 
         :param size: the size of this object in meters
         :param texture_filename: the filename of the texture for this object
         """
-        self._texture = TexturePack.get_texture(texture_filename)
-        self._size = size
         self._pos = Vector2(0, 0)
         self._angle = 0
+        self._size = Vector2(0, 0) if size is None else size
+        self._texture = None if texture_filename is None else TexturePack.get_texture(texture_filename)
 
     def get_size(self) -> Vector2:
         """
@@ -131,6 +133,37 @@ class SimObject:
         """
         self._angle = angle
 
+    def xml_load(self, node: Element) -> None:
+        """
+        Load attributes about this object from a xml node
+
+        If the node is missing a possible attribute, it will remain unchanged in the object
+
+        :param node: the xml node to load from
+        """
+        # Load position attributes
+        if (x := node.get("x")) is not None:
+            self._pos.x = float(x)
+        if (y := node.get("y")) is not None:
+            self._pos.y = float(y)
+
+        # Load the angle (NOTE: the xml angle is in degrees, we store radians internally)
+        if (angle := node.get("angle")) is not None:
+            self._angle = radians(float(angle))
+
+        # Load size related attributes
+        if (width := node.get("width")) is not None:
+            self._size.x = float(width)
+        if (height := node.get("height")) is not None:
+            self._size.y = float(height)
+
+        # Load the texture attribute (if an invalid filename, don't overwrite the current texture
+        if (texture_filename := node.get("texture")) is not None:
+            texture = TexturePack.get_texture(texture_filename)
+
+            if texture is not None:
+                self._texture = texture
+
     def update(self, delta_time: float) -> None:
         """
         Update this object
@@ -143,12 +176,16 @@ class SimObject:
         """
         Draw this object to the screen
         """
+        # We shouldn't attempt to draw this if the texture is invalid
+        if self._texture is None:
+            return
+
         # Save the current state of the view matrix
         rl_push_matrix()
 
         # Move to the center of this object and rotate for its orientation
         rl_translatef(self._pos.x, self._pos.y, 0)
-        rl_rotatef(math.degrees(self._angle), 0, 0, 1)
+        rl_rotatef(degrees(self._angle), 0, 0, 1)
 
         # Draw the texture to the screen
         source_rect = Rectangle(0, 0, self._texture.width, self._texture.height)
