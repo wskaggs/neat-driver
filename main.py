@@ -2,6 +2,7 @@ from pyray import *
 from src import Simulation, TexturePack, AiDriver
 import neat
 import sys
+import os
 
 
 def initialize_window() -> None:
@@ -30,11 +31,12 @@ def terminate_window() -> None:
     close_window()
 
 
-def load_population_from_config_file(path: str) -> neat.Population:
+def load_population_from_config_file(path: str, checkpoint_save_path: str | None) -> neat.Population:
     """
     Create a population given the path to the neat configuration file
 
     :param path: path to the neat configuration file
+    :param checkpoint_save_path: path to save checkpoints to
     :return: the created population
     """
     # Load the configuration file
@@ -46,7 +48,24 @@ def load_population_from_config_file(path: str) -> neat.Population:
     population.add_reporter(neat.StdOutReporter(True))
     population.add_reporter(neat.StatisticsReporter())
 
+    if checkpoint_save_path is not None:
+        if not os.path.exists(checkpoint_save_path):
+            os.makedirs(checkpoint_save_path)
+
+        checkpointer = neat.Checkpointer(5, None, f"{checkpoint_save_path}/neat-checkpoint-")
+        population.add_reporter(checkpointer)
+
     return population
+
+
+def load_population_from_checkpoint(checkpoint_path: str) -> neat.Population:
+    """
+    Load a population from a saved checkpoint
+
+    :param checkpoint_path: the path to the saved checkpoint
+    :return: the created population
+    """
+    return neat.Checkpointer.restore_checkpoint(checkpoint_path)
 
 
 def run_simulation(population: neat.Population, track_filepath: str, tick_time: float = 1 / 20) -> None:
@@ -105,7 +124,15 @@ def main() -> None:
     Entry point into running the simulation visualization
     """
     initialize_window()
-    population = load_population_from_config_file("assets/configs/config-feedforward.txt")
+
+    # Load the population from a configuration file
+    #config_filepath = "assets/configs/config-feedforward.txt"
+    #checkpoint_save_path = "assets/checkpoints/windy"
+    #population = load_population_from_config_file(config_filepath, checkpoint_save_path)
+
+    # Load the population from a checkpoint
+    population = load_population_from_checkpoint("assets/checkpoints/windy/neat-checkpoint-59")
+
     run_simulation(population, "assets/tracks/windy.xml")
     terminate_window()
 
