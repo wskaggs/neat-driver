@@ -65,7 +65,12 @@ def load_population_from_checkpoint(checkpoint_path: str) -> neat.Population:
     :param checkpoint_path: the path to the saved checkpoint
     :return: the created population
     """
-    return neat.Checkpointer.restore_checkpoint(checkpoint_path)
+    population = neat.Checkpointer.restore_checkpoint(checkpoint_path)
+    population.add_reporter(neat.StdOutReporter(True))
+    population.add_reporter(neat.StatisticsReporter())
+    population.add_reporter(neat.Checkpointer(5, None, f"{os.path.dirname(checkpoint_path)}/neat-checkpoint-"))
+
+    return population
 
 
 def run_simulation(population: neat.Population, track_filepath: str, tick_time: float = 1 / 20) -> None:
@@ -126,12 +131,12 @@ def main() -> None:
     initialize_window()
 
     # Load the population from a configuration file
-    #config_filepath = "assets/configs/config-feedforward.txt"
-    #checkpoint_save_path = "assets/checkpoints/windy"
-    #population = load_population_from_config_file(config_filepath, checkpoint_save_path)
+    config_filepath = "assets/configs/config-feedforward.txt"
+    checkpoint_save_path = "assets/checkpoints/windy"
+    population = load_population_from_config_file(config_filepath, checkpoint_save_path)
 
     # Load the population from a checkpoint
-    population = load_population_from_checkpoint("assets/checkpoints/windy/neat-checkpoint-59")
+    #population = load_population_from_checkpoint("assets/checkpoints/windy/neat-checkpoint-59")
 
     run_simulation(population, "assets/tracks/windy.xml")
     terminate_window()
