@@ -124,7 +124,7 @@ def run_simulation(population: neat.Population, track_filepath: str, tick_time: 
 
         # Add a bonus to the drivers that are still alive after the alotted time ends
         for driver in simulation._drivers:
-            if isinstance(driver, AiDriver):
+            if isinstance(driver, AiDriver) and not driver.is_off_track():
                 driver._genome.fitness *= 1.2
 
     # Train the population
