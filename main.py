@@ -98,16 +98,18 @@ def run_simulation(population: neat.Population, track_filepath: str, tick_time: 
             driver = AiDriver(simulation.get_track(), genome, config)
             simulation.add_driver(driver)
 
-        # Run the simulation until all drivers are off-track
+        # Run the simulation until all drivers are off-track or the
+        time_since_start = 0
         time_since_last_update = 0
 
-        while not simulation.all_drivers_off_track():
+        while time_since_start < 60 and not simulation.all_drivers_off_track():
             # Close the window gracefully if requested by the user
             if window_should_close():
                 terminate_window()
                 sys.exit()
 
             # Update the drivers (we may need to do this multiple times depending on the frame rate)
+            time_since_start += get_frame_time()
             time_since_last_update += get_frame_time()
 
             while time_since_last_update >= tick_time:
@@ -119,6 +121,11 @@ def run_simulation(population: neat.Population, track_filepath: str, tick_time: 
             clear_background(BLACK)
             simulation.draw()
             end_drawing()
+
+        # Add a bonus to the drivers that are still alive after the alotted time ends
+        for driver in simulation._drivers:
+            if isinstance(driver, AiDriver):
+                driver._genome.fitness *= 1.2
 
     # Train the population
     population.run(evaluate_genomes)
@@ -132,13 +139,13 @@ def main() -> None:
 
     # Load the population from a configuration file
     config_filepath = "assets/configs/config-feedforward.txt"
-    checkpoint_save_path = "assets/checkpoints/windy"
+    checkpoint_save_path = "assets/checkpoints/oval"
     population = load_population_from_config_file(config_filepath, checkpoint_save_path)
 
     # Load the population from a checkpoint
     #population = load_population_from_checkpoint("assets/checkpoints/windy/neat-checkpoint-59")
 
-    run_simulation(population, "assets/tracks/windy.xml")
+    run_simulation(population, "assets/tracks/oval.xml")
     terminate_window()
 
 

@@ -35,6 +35,7 @@ class AiDriver(DriverBase):
         # If the car is currently off track or has been stagnant for too long, mark as dead
         if self._track.is_off_track(self.get_position()) or self._time_stagnant >= 2:
             self.set_off_track(True)
+            self._genome.fitness *= 0.5
             return
 
         # Update the driver and the fitness of the genome
