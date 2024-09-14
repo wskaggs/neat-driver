@@ -139,13 +139,14 @@ def main() -> None:
 
     # Load the population from a configuration file
     config_filepath = "assets/configs/config-feedforward.txt"
-    checkpoint_save_path = "assets/checkpoints/oval"
+    checkpoint_save_path = "assets/checkpoints/windy"
     population = load_population_from_config_file(config_filepath, checkpoint_save_path)
 
     # Load the population from a checkpoint
-    #population = load_population_from_checkpoint("assets/checkpoints/windy/neat-checkpoint-59")
+    # population = load_population_from_checkpoint("assets/checkpoints/windy/neat-checkpoint-49")
 
-    run_simulation(population, "assets/tracks/oval.xml")
+    run_simulation(population, "assets/tracks/windy.xml")
+    # print(population.best_genome)
     terminate_window()
 
 

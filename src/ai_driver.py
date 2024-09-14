@@ -13,7 +13,7 @@ class AiDriver(DriverBase):
         super().__init__(track)
         self._genome = genome
         self._genome.fitness = 0
-        self._network = neat.nn.FeedForwardNetwork.create(genome, config)
+        self._network = neat.nn.RecurrentNetwork.create(genome, config)
         self._time_stagnant = 0
 
     def update(self, delta_time: float) -> None:
